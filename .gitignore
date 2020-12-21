@@ -6,3 +6,4 @@ swagger/**/swagger.yml
 run.sh
 *.log
 conf/*.json
+lastupdate.tmp
