@@ -1,0 +1,33 @@
+{
+  "type": "GQL_DATA",
+  "value": {
+    "data": {
+      "transaction": {
+        "hash": "ed288f154fda8dafeaec56c73616dcfbb0200ec7e5ca1e42f0aabf2127e2c7e4",
+        "type": "InvocationTransaction",
+        "enrollment": null,
+        "contracts": {
+          "edges": []
+        },
+        "asset": null,
+        "transfers": {
+          "edges": []
+        },
+        "network_fee": "0.00000000",
+        "system_fee": "0.00000000",
+        "size": 312,
+        "block_time": 1608561251,
+        "block_id": 6659566,
+        "scripts": [
+          {
+            "invocation_script": "40135da78bac4c4dad52f637d1b31a76c3c51ab2f55f945132f1dcee3c2547260563cc69e050134970d34f71e1104495e9d8aa34cc182c5f2a1ee9cd143c924c51",
+            "verification_script": "2103b0a1d9048bfcf7ae7eeeb1b0202456726074bc77fc3fa2a9f38d60a9c3f02eefac"
+          }
+        ],
+        "script": "08ffff895d7845630114b6cb731f90cefebbd4f9cedd0cf56bd1e21967f414378b147c06a7737a6a712d7bdcfa0d5bc3ca4d53147ba002bc1dbc918d555f1d466acda1d540332e2814b6cb731f90cefebbd4f9cedd0cf56bd1e21967f454c1040065cd1d040065cd1d1442cc50d92003f048f5e735b0210a362b96bb946d55c11673776170546f6b656e496e466f72546f6b656e4f757467aa47e2a95cc9ea59700144dd9f38ab356286a25e",
+        "id": "Transaction:45211919"
+      }
+    }
+  },
+  "id": "6"
+}
