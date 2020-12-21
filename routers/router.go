@@ -1,5 +1,5 @@
 // @APIVersion 1.0.0
-// @Title beego Test API
+// @Title Starcoin API
 // @Description beego has a very cool tools to autogenerate documents for your API
 // @Contact astaxie@gmail.com
 // @TermsOfServiceUrl http://beego.me/
@@ -15,14 +15,14 @@ import (
 
 func init() {
 	ns := beego.NewNamespace("/v1",
-		beego.NSNamespace("/object",
+		beego.NSNamespace("/block",
 			beego.NSInclude(
-				&controllers.ObjectController{},
+				&controllers.BlockController{},
 			),
 		),
-		beego.NSNamespace("/user",
+		beego.NSNamespace("/transaction",
 			beego.NSInclude(
-				&controllers.UserController{},
+				&controllers.TransactionController{},
 			),
 		),
 	)
