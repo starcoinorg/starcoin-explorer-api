@@ -2,7 +2,8 @@ package utils
 
 import (
 	"fmt"
-	"github.com/json-iterator/go"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 type ErrorMessage struct {
@@ -12,6 +13,7 @@ type ErrorMessage struct {
 
 var ERROR_MESSAGE = map[string]*ErrorMessage{
 	"NO_BLOCK_HASH":       {400, "No block hash"},
+	"INVALID_BLOCK_PAGE":  {400, "Invalid page info"},
 	"NO_TRANSACTION_HASH": {400, "No transaction hash"},
 }
 
