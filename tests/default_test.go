@@ -1,39 +1,57 @@
 package test
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"runtime"
+	"encoding/json"
+	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/stretchr/testify/assert"
+	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
+	"runtime"
 	_ "starcoin-api/routers"
+	"testing"
 
 	beego "github.com/beego/beego/v2/server/web"
-	"github.com/beego/beego/v2/core/logs"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
-	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".." + string(filepath.Separator))))
+	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator))))
 	beego.TestBeegoInit(apppath)
 }
 
-// TestGet is a sample to run an endpoint test
-func TestGet(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/v1/object", nil)
-	w := httptest.NewRecorder()
-	beego.BeeApp.Handlers.ServeHTTP(w, r)
+var esUrl = os.Getenv("STARCOIN_ES_URL")
+var esUser = os.Getenv("STARCOIN_ES_USER")
+var esPwd = os.Getenv("STARCOIN_ES_PWD")
 
-	logs.Info("testing", "TestGet", "Code[%d]\n%s", w.Code, w.Body.String())
+// Test_Elasticsearch is a sample to run an endpoint test
+func Test_Elasticsearch(t *testing.T) {
+	cfg := elasticsearch.Config{
+		Addresses: []string{
+			esUrl,
+		},
+		Username: esUser,
+		Password: esPwd,
+	}
+	es, err := elasticsearch.NewClient(cfg)
+	if err != nil {
+		log.Fatalf("Error creating the client: %s", err)
+	}
 
-	Convey("Subject: Test Station Endpoint\n", t, func() {
-	        Convey("Status Code Should Be 200", func() {
-	                So(w.Code, ShouldEqual, 200)
-	        })
-	        Convey("The Result Should Not Be Empty", func() {
-	                So(w.Body.Len(), ShouldBeGreaterThan, 0)
-	        })
-	})
+	res, err := es.Info()
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	var objmap map[string]interface{}
+	if err := json.Unmarshal(body, &objmap); err != nil {
+		log.Fatal(err)
+	}
+	//utils.LogJson(objmap)
+
+	assert.Equal(t, objmap["cluster_name"], "starcoin-elasticsearch", "es cluster_name should be: starcoin-elasticsearch")
 }
-
