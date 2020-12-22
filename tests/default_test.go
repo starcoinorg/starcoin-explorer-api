@@ -2,13 +2,12 @@ package test
 
 import (
 	"encoding/json"
-	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
-	"os"
 	"path/filepath"
 	"runtime"
+	"starcoin-api/db"
 	_ "starcoin-api/routers"
 	"testing"
 
@@ -19,27 +18,13 @@ func init() {
 	_, file, _, _ := runtime.Caller(0)
 	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator))))
 	beego.TestBeegoInit(apppath)
-}
 
-var esUrl = os.Getenv("STARCOIN_ES_URL")
-var esUser = os.Getenv("STARCOIN_ES_USER")
-var esPwd = os.Getenv("STARCOIN_ES_PWD")
+	db.ConnectElasticsearch()
+}
 
 // Test_Elasticsearch is a sample to run an endpoint test
 func Test_Elasticsearch(t *testing.T) {
-	cfg := elasticsearch.Config{
-		Addresses: []string{
-			esUrl,
-		},
-		Username: esUser,
-		Password: esPwd,
-	}
-	es, err := elasticsearch.NewClient(cfg)
-	if err != nil {
-		log.Fatalf("Error creating the client: %s", err)
-	}
-
-	res, err := es.Info()
+	res, err := db.ES.Info()
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)
 	}
