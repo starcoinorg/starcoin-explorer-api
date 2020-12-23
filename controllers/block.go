@@ -90,7 +90,7 @@ func (c *BlockController) GetAll() {
 	page, _ := c.GetInt(":page")
 	fmt.Printf("page=%d\n", page)
 	if !(page > 0) {
-		c.Response(nil, nil, utils.ERROR_MESSAGE["INVALID_BLOCK_PAGE"])
+		c.Response(nil, nil, utils.ERROR_MESSAGE["INVALID_PAGE"])
 		return
 	}
 	pageSize := 10
