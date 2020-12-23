@@ -36,7 +36,7 @@ func (c *TransactionController) Get() {
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_phrase": map[string]interface{}{
-				"header.transaction_hash": transactionHash,
+				"transaction_hash": transactionHash,
 			},
 		},
 	}
