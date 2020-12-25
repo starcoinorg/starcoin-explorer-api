@@ -36,7 +36,7 @@ func (c *TransactionController) Get() {
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_phrase": map[string]interface{}{
-				"transaction_hash": transactionHash,
+				"_id": transactionHash,
 			},
 		},
 	}
@@ -48,7 +48,7 @@ func (c *TransactionController) Get() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("starcoin.txn_infos"),
+		db.ES.Search.WithIndex("proxima*.txn_infos"),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
@@ -115,7 +115,7 @@ func (c *TransactionController) GetAll() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("starcoin.txn_infos"),
+		db.ES.Search.WithIndex("proxima*.txn_infos"),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
