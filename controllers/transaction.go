@@ -75,7 +75,7 @@ func (c *TransactionController) Get() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	utils.LogJson(r)
+	//utils.LogJson(r)
 
 	c.Response(r, err)
 
@@ -85,7 +85,7 @@ func (c *TransactionController) Get() {
 // @Description get all transactions
 // @Param	page		path 	int	true		"page number"
 // @Success 200 {object} models.Transaction
-// @router /:page [get]
+// @router /page/:page [get]
 func (c *TransactionController) GetAll() {
 	page, _ := c.GetInt(":page")
 	fmt.Printf("page=%d\n", page)
@@ -93,7 +93,7 @@ func (c *TransactionController) GetAll() {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["INVALID_PAGE"])
 		return
 	}
-	pageSize := 10
+	pageSize := 20
 	from := (page - 1) * pageSize
 	fmt.Printf("from=%d size=%d\n", from, pageSize)
 	var r map[string]interface{}
@@ -142,7 +142,7 @@ func (c *TransactionController) GetAll() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	utils.LogJson(r)
+	//utils.LogJson(r)
 
 	c.Response(r, err)
 }
