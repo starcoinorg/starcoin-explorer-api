@@ -106,6 +106,13 @@ func (c *TransactionController) GetAll() {
 		},
 		"from": from,
 		"size": pageSize,
+		"sort": []map[string]interface{}{
+			map[string]interface{}{
+				"user_transaction.raw_txn.sequence_number": map[string]interface{}{
+					"order": "desc",
+				},
+			},
+		},
 	}
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		log.Fatalf("Error encoding query: %s", err)
