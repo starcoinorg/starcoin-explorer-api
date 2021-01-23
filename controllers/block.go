@@ -48,7 +48,7 @@ func (c *BlockController) Get() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("proxima*.blocks"),
+		db.ES.Search.WithIndex("halley*.blocks"),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
@@ -122,7 +122,7 @@ func (c *BlockController) GetAll() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("proxima*.blocks"),
+		db.ES.Search.WithIndex("halley*.blocks"),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),

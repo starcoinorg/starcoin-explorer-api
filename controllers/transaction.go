@@ -48,7 +48,7 @@ func (c *TransactionController) Get() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("proxima*.txn_infos"),
+		db.ES.Search.WithIndex("halley*.txn_infos"),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
@@ -102,7 +102,12 @@ func (c *TransactionController) GetAll() {
 	var buf bytes.Buffer
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
-			"match_all": map[string]interface{}{},
+			//"match_all": map[string]interface{}{},
+			"range": map[string]interface{}{
+				"transaction_index": map[string]interface{}{
+					"gt": 0,
+				},
+			},
 		},
 		"from": from,
 		"size": pageSize,
@@ -122,7 +127,7 @@ func (c *TransactionController) GetAll() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("proxima*.txn_infos"),
+		db.ES.Search.WithIndex("halley*.txn_infos"),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
@@ -152,4 +157,77 @@ func (c *TransactionController) GetAll() {
 	//utils.LogJson(r)
 
 	c.Response(r, err)
+}
+
+
+// @Title Get Transactions by Address
+// @Description find transactions by address hash
+// @Param	addressHash		path 	string	true		"the addressHash you want to get"
+// @Success 200 {object} models.Transaction
+// @Failure 403 :addressHash is empty
+// @router /byAddress/:addressHash [get]
+func (c *TransactionController) GetListByAddress() {
+	addressHash := template.HTMLEscapeString(c.GetString(":addressHash"))
+	fmt.Println("addressHash", addressHash)
+	if addressHash == "" {
+		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_ADDRESS_HASH"])
+		return
+	}
+	var r map[string]interface{}
+
+	// Build the request body.
+	var buf bytes.Buffer
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"match_phrase": map[string]interface{}{
+				"user_transaction.raw_txn.sender": addressHash,
+			},
+		},
+		"sort": []map[string]interface{}{
+			map[string]interface{}{
+				"user_transaction.raw_txn.sequence_number": map[string]interface{}{
+					"order": "desc",
+				},
+			},
+		},
+	}
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		log.Fatalf("Error encoding query: %s", err)
+	}
+	log.Print(query)
+
+	// Perform the search request.
+	res, err := db.ES.Search(
+		db.ES.Search.WithContext(context.Background()),
+		db.ES.Search.WithIndex("halley*.txn_infos"),
+		db.ES.Search.WithBody(&buf),
+		db.ES.Search.WithTrackTotalHits(true),
+		db.ES.Search.WithPretty(),
+	)
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		var e map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
+			log.Fatalf("Error parsing the response body: %s", err)
+		} else {
+			// Print the response status and error information.
+			log.Fatalf("[%s] %s: %s",
+				res.Status(),
+				e["error"].(map[string]interface{})["type"],
+				e["error"].(map[string]interface{})["reason"],
+			)
+		}
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+		log.Fatalf("Error parsing the response body: %s", err)
+	}
+	//utils.LogJson(r)
+
+	c.Response(r, err)
+
 }
