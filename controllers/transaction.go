@@ -234,3 +234,77 @@ func (c *TransactionController) GetListByAddress() {
 	c.Response(r, err)
 
 }
+
+
+
+// @Title Get Transactions by Block
+// @Description find transactions by block hash
+// @Param	blockHash		path 	string	true		"the blockHash you want to get"
+// @Success 200 {object} models.Transaction
+// @Failure 403 :blockHash is empty
+// @router /byBlock/:blockHash [get]
+func (c *TransactionController) GetListByBlock() {
+	blockHash := template.HTMLEscapeString(c.GetString(":blockHash"))
+	fmt.Println("addressHash", blockHash)
+	if blockHash == "" {
+		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_ADDRESS_HASH"])
+		return
+	}
+	var r map[string]interface{}
+
+	// Build the request body.
+	var buf bytes.Buffer
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"match_phrase": map[string]interface{}{
+				"block_hash": blockHash,
+			},
+		},
+		"sort": []map[string]interface{}{
+			map[string]interface{}{
+				"transaction_index": map[string]interface{}{
+					"order": "desc",
+				},
+			},
+		},
+	}
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		log.Fatalf("Error encoding query: %s", err)
+	}
+	log.Print(query)
+
+	// Perform the search request.
+	res, err := db.ES.Search(
+		db.ES.Search.WithContext(context.Background()),
+		db.ES.Search.WithIndex(esTransactions),
+		db.ES.Search.WithBody(&buf),
+		db.ES.Search.WithTrackTotalHits(true),
+		db.ES.Search.WithPretty(),
+	)
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		var e map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
+			log.Fatalf("Error parsing the response body: %s", err)
+		} else {
+			// Print the response status and error information.
+			log.Fatalf("[%s] %s: %s",
+				res.Status(),
+				e["error"].(map[string]interface{})["type"],
+				e["error"].(map[string]interface{})["reason"],
+			)
+		}
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+		log.Fatalf("Error parsing the response body: %s", err)
+	}
+	//utils.LogJson(r)
+
+	c.Response(r, err)
+
+}
