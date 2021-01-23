@@ -7,9 +7,12 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"os"
 	"starcoin-api/db"
 	"starcoin-api/utils"
 )
+
+var esTransactions = fmt.Sprintf("%s.txn_infos", os.Getenv("STARCOIN_ES_PREFIX"))
 
 // Operations about transaction
 type TransactionController struct {
@@ -48,7 +51,7 @@ func (c *TransactionController) Get() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("halley*.txn_infos"),
+		db.ES.Search.WithIndex(esTransactions),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
@@ -127,7 +130,7 @@ func (c *TransactionController) GetAll() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("halley*.txn_infos"),
+		db.ES.Search.WithIndex(esTransactions),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
@@ -199,7 +202,7 @@ func (c *TransactionController) GetListByAddress() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("halley*.txn_infos"),
+		db.ES.Search.WithIndex(esTransactions),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
