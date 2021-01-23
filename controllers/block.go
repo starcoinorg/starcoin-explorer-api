@@ -9,7 +9,10 @@ import (
 	"log"
 	"starcoin-api/db"
 	"starcoin-api/utils"
+	"os"
 )
+
+var esBlocks = fmt.Sprintf("%s.blocks", os.Getenv("STARCOIN_ES_PREFIX"))
 
 // Operations about block
 type BlockController struct {
@@ -48,7 +51,7 @@ func (c *BlockController) Get() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("halley*.blocks"),
+		db.ES.Search.WithIndex(esBlocks),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
@@ -122,7 +125,7 @@ func (c *BlockController) GetAll() {
 	// Perform the search request.
 	res, err := db.ES.Search(
 		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex("halley*.blocks"),
+		db.ES.Search.WithIndex(esBlocks),
 		db.ES.Search.WithBody(&buf),
 		db.ES.Search.WithTrackTotalHits(true),
 		db.ES.Search.WithPretty(),
