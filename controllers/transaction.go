@@ -116,7 +116,7 @@ func (c *TransactionController) GetAll() {
 		"size": pageSize,
 		"sort": []map[string]interface{}{
 			map[string]interface{}{
-				"user_transaction.raw_txn.sequence_number": map[string]interface{}{
+				"timestamp": map[string]interface{}{
 					"order": "desc",
 				},
 			},
