@@ -27,7 +27,6 @@ type TransactionController struct {
 // @router /hash/:transactionHash [get]
 func (c *TransactionController) Get() {
 	transactionHash := template.HTMLEscapeString(c.GetString(":transactionHash"))
-	fmt.Println("transactionHash", transactionHash)
 	if transactionHash == "" {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_TRANSACTION_HASH"])
 		return
@@ -78,7 +77,6 @@ func (c *TransactionController) Get() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	//utils.LogJson(r)
 
 	c.Response(r, err)
 
@@ -91,14 +89,12 @@ func (c *TransactionController) Get() {
 // @router /page/:page [get]
 func (c *TransactionController) GetAll() {
 	page, _ := c.GetInt(":page")
-	fmt.Printf("page=%d\n", page)
 	if !(page > 0) {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["INVALID_PAGE"])
 		return
 	}
 	pageSize := 20
 	from := (page - 1) * pageSize
-	fmt.Printf("from=%d size=%d\n", from, pageSize)
 	var r map[string]interface{}
 
 	// Build the request body.
@@ -157,11 +153,9 @@ func (c *TransactionController) GetAll() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	//utils.LogJson(r)
 
 	c.Response(r, err)
 }
-
 
 // @Title Get Transactions by Address
 // @Description find transactions by address hash
@@ -171,7 +165,6 @@ func (c *TransactionController) GetAll() {
 // @router /byAddress/:addressHash [get]
 func (c *TransactionController) GetListByAddress() {
 	addressHash := template.HTMLEscapeString(c.GetString(":addressHash"))
-	fmt.Println("addressHash", addressHash)
 	if addressHash == "" {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_ADDRESS_HASH"])
 		return
@@ -229,13 +222,10 @@ func (c *TransactionController) GetListByAddress() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	//utils.LogJson(r)
 
 	c.Response(r, err)
 
 }
-
-
 
 // @Title Get Transactions by Block
 // @Description find transactions by block hash
@@ -245,7 +235,6 @@ func (c *TransactionController) GetListByAddress() {
 // @router /byBlock/:blockHash [get]
 func (c *TransactionController) GetListByBlock() {
 	blockHash := template.HTMLEscapeString(c.GetString(":blockHash"))
-	fmt.Println("addressHash", blockHash)
 	if blockHash == "" {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_ADDRESS_HASH"])
 		return
@@ -303,7 +292,6 @@ func (c *TransactionController) GetListByBlock() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	//utils.LogJson(r)
 
 	c.Response(r, err)
 
