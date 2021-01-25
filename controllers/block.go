@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"os"
 	"starcoin-api/db"
 	"starcoin-api/utils"
-	"os"
 )
 
 var esBlocks = fmt.Sprintf("%s.blocks", os.Getenv("STARCOIN_ES_PREFIX"))
@@ -27,7 +27,6 @@ type BlockController struct {
 // @router /hash/:blockHash [get]
 func (c *BlockController) Get() {
 	blockHash := template.HTMLEscapeString(c.GetString(":blockHash"))
-	fmt.Println("blockHash", blockHash)
 	if blockHash == "" {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_BLOCK_HASH"])
 		return
@@ -46,7 +45,6 @@ func (c *BlockController) Get() {
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		log.Fatalf("Error encoding query: %s", err)
 	}
-	log.Print(query)
 
 	// Perform the search request.
 	res, err := db.ES.Search(
@@ -78,7 +76,6 @@ func (c *BlockController) Get() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	//utils.LogJson(r)
 
 	c.Response(r, err)
 
@@ -91,14 +88,12 @@ func (c *BlockController) Get() {
 // @router /page/:page [get]
 func (c *BlockController) GetAll() {
 	page, _ := c.GetInt(":page")
-	fmt.Printf("page=%d\n", page)
 	if !(page > 0) {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["INVALID_PAGE"])
 		return
 	}
 	pageSize := 20
 	from := (page - 1) * pageSize
-	fmt.Printf("from=%d size=%d\n", from, pageSize)
 	var r map[string]interface{}
 
 	// Build the request body.
@@ -120,7 +115,6 @@ func (c *BlockController) GetAll() {
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		log.Fatalf("Error encoding query: %s", err)
 	}
-	log.Print(query)
 
 	// Perform the search request.
 	res, err := db.ES.Search(
@@ -152,7 +146,6 @@ func (c *BlockController) GetAll() {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Fatalf("Error parsing the response body: %s", err)
 	}
-	//utils.LogJson(r)
 
 	c.Response(r, err)
 }

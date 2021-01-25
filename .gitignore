@@ -1,5 +1,5 @@
 .idea
-starcoin-api*
+starcoin-explorer-api*
 routers/commentsRouter_*.go
 swagger/**/swagger.json
 swagger/**/swagger.yml
