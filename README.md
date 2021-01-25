@@ -4,6 +4,15 @@
 - Bee       : v2.0.2 
 - Beego     : v2.0.1
 
+### Set Environment Variable
+
+```
+export STARCOIN_ES_URL=<url>
+export STARCOIN_ES_USER=<username>
+export STARCOIN_ES_PWD=<password>
+export STARCOIN_ES_PREFIX=<prefix>
+```
+
 ### Init & Run
 
 ```
@@ -11,7 +20,6 @@ git clone git@github.com:starcoinorg/starcoin-explorer-api.git
 cd starcoin-explorer-api
 go install
 bee run -gendoc=true
-
 ```
 
 ### Docs
