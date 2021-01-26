@@ -8,7 +8,7 @@
 package routers
 
 import (
-	"starcoin-api/controllers"
+	"starcoin-explorer-api/controllers"
 
 	beego "github.com/beego/beego/v2/server/web"
 )

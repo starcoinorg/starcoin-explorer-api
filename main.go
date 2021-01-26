@@ -1,8 +1,8 @@
 package main
 
 import (
-	"starcoin-api/db"
-	_ "starcoin-api/routers"
+	"starcoin-explorer-api/db"
+	_ "starcoin-explorer-api/routers"
 
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/beego/beego/v2/server/web/filter/cors"

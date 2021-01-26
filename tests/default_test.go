@@ -7,8 +7,8 @@ import (
 	"log"
 	"path/filepath"
 	"runtime"
-	"starcoin-api/db"
-	_ "starcoin-api/routers"
+	"starcoin-explorer-api/db"
+	_ "starcoin-explorer-api/routers"
 	"testing"
 
 	jsoniter "github.com/json-iterator/go"

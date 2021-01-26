@@ -8,8 +8,8 @@ import (
 	"html/template"
 	"log"
 	"os"
-	"starcoin-api/db"
-	"starcoin-api/utils"
+	"starcoin-explorer-api/db"
+	"starcoin-explorer-api/utils"
 )
 
 var esTransactions = fmt.Sprintf("%s.txn_infos", os.Getenv("STARCOIN_ES_PREFIX"))

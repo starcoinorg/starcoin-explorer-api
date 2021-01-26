@@ -1,4 +1,4 @@
-module starcoin-api
+module starcoin-explorer-api
 
 go 1.15
 
