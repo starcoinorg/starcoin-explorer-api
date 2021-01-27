@@ -1,0 +1,4 @@
+starcoin-explorer-api:
+  image: starcoin-explorer-api:latest
+  ports:
+   - "8080:8080"

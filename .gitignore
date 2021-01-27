@@ -3,7 +3,8 @@ starcoin-explorer-api*
 routers/commentsRouter_*.go
 swagger/**/swagger.json
 swagger/**/swagger.yml
-run.sh
+./run.sh
 *.log
 conf/*.json
 lastupdate.tmp
+docker/image/conf/*
