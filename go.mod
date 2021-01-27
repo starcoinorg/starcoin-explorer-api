@@ -3,6 +3,7 @@ module starcoin-explorer-api
 go 1.15
 
 require (
+	github.com/astaxie/beego v1.12.2
 	github.com/beego/beego/v2 v2.0.1
 	github.com/elastic/go-elasticsearch/v7 v7.10.0
 	github.com/json-iterator/go v1.1.10

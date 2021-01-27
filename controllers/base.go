@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	beego "github.com/beego/beego/v2/server/web"
+	"github.com/astaxie/beego"
 	"starcoin-explorer-api/utils"
 )
 

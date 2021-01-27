@@ -8,9 +8,8 @@
 package routers
 
 import (
+	"github.com/astaxie/beego"
 	"starcoin-explorer-api/controllers"
-
-	beego "github.com/beego/beego/v2/server/web"
 )
 
 func init() {
