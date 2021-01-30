@@ -2,7 +2,7 @@
 
 - Go        : go1.15.6
 - Bee       : v2.0.2 
-- Beego     : v2.0.1
+- Beego     : v1.7.2
 
 ### Set Environment Variable
 
