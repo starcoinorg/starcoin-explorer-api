@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"starcoin-explorer-api/utils"
+	"strings"
 )
 
 // Operations about object
@@ -14,7 +16,12 @@ type NestPreparer interface {
 	NestPreparer()
 }
 
+var esPrefix = ""
+
 func (c *BaseController) Prepare() {
+	url := c.Ctx.Input.URL()
+	network := strings.Split(url, "/")[3]
+	esPrefix = fmt.Sprintf("%s*", network)
 	if app, ok := c.AppController.(NestPreparer); ok {
 		app.NestPreparer()
 	}

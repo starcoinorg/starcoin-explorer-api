@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	db.ConnectElasticsearch()
+	db.ConnectElasticSearch()
 }
 
 func main() {

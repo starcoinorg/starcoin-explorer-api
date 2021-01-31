@@ -22,7 +22,7 @@ func init() {
 	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator))))
 	beego.TestBeegoInit(apppath)
 
-	db.ConnectElasticsearch()
+	db.ConnectElasticSearch()
 }
 
 // TestElasticsearch is a sample to run an endpoint test

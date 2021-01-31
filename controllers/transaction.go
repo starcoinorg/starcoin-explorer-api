@@ -1,18 +1,12 @@
 package controllers
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"fmt"
 	"html/template"
-	"log"
-	"os"
 	"starcoin-explorer-api/db"
 	"starcoin-explorer-api/utils"
 )
 
-var esTransactions = fmt.Sprintf("%s.txn_infos", os.Getenv("STARCOIN_ES_PREFIX"))
+const TableTransaction = "txn_infos"
 
 // Operations about transaction
 type TransactionController struct {
@@ -21,20 +15,18 @@ type TransactionController struct {
 
 // @Title Get
 // @Description find transaction by transactionHash
+// @Param	network		path 	string	true		"the network you want to use"
 // @Param	transactionHash		path 	string	true		"the transactionHash you want to get"
 // @Success 200 {object} models.Transaction
 // @Failure 403 :transactionHash is empty
-// @router /hash/:transactionHash [get]
+// @router /:network/hash/:transactionHash [get]
 func (c *TransactionController) Get() {
 	transactionHash := template.HTMLEscapeString(c.GetString(":transactionHash"))
 	if transactionHash == "" {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_TRANSACTION_HASH"])
 		return
 	}
-	var r map[string]interface{}
 
-	// Build the request body.
-	var buf bytes.Buffer
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_phrase": map[string]interface{}{
@@ -42,51 +34,19 @@ func (c *TransactionController) Get() {
 			},
 		},
 	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-	log.Print(query)
 
-	// Perform the search request.
-	res, err := db.ES.Search(
-		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex(esTransactions),
-		db.ES.Search.WithBody(&buf),
-		db.ES.Search.WithTrackTotalHits(true),
-		db.ES.Search.WithPretty(),
-	)
-	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
-	}
-	defer res.Body.Close()
+	result, err := db.Query(&query, esPrefix, TableTransaction)
 
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-	}
-
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-
-	c.Response(r, err)
+	c.Response(result, err)
 
 }
 
 // @Title GetAll
 // @Description get all transactions
+// @Param	network		path 	string	true		"the network you want to use"
 // @Param	page		path 	int	true		"page number"
 // @Success 200 {object} models.Transaction
-// @router /page/:page [get]
+// @router /:network/page/:page [get]
 func (c *TransactionController) GetAll() {
 	page, _ := c.GetInt(":page")
 	if !(page > 0) {
@@ -95,10 +55,8 @@ func (c *TransactionController) GetAll() {
 	}
 	pageSize := 20
 	from := (page - 1) * pageSize
-	var r map[string]interface{}
 
-	// Build the request body.
-	var buf bytes.Buffer
+
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			//"match_all": map[string]interface{}{},
@@ -118,61 +76,26 @@ func (c *TransactionController) GetAll() {
 			},
 		},
 	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-	log.Print(query)
 
-	// Perform the search request.
-	res, err := db.ES.Search(
-		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex(esTransactions),
-		db.ES.Search.WithBody(&buf),
-		db.ES.Search.WithTrackTotalHits(true),
-		db.ES.Search.WithPretty(),
-	)
-	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
-	}
-	defer res.Body.Close()
+	result, err := db.Query(&query, esPrefix, TableTransaction)
 
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-	}
-
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-
-	c.Response(r, err)
+	c.Response(result, err)
 }
 
 // @Title Get Transactions by Address
 // @Description find transactions by address hash
+// @Param	network		path 	string	true		"the network you want to use"
 // @Param	addressHash		path 	string	true		"the addressHash you want to get"
 // @Success 200 {object} models.Transaction
 // @Failure 403 :addressHash is empty
-// @router /byAddress/:addressHash [get]
+// @router /:network/byAddress/:addressHash [get]
 func (c *TransactionController) GetListByAddress() {
 	addressHash := template.HTMLEscapeString(c.GetString(":addressHash"))
 	if addressHash == "" {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_ADDRESS_HASH"])
 		return
 	}
-	var r map[string]interface{}
 
-	// Build the request body.
-	var buf bytes.Buffer
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_phrase": map[string]interface{}{
@@ -187,62 +110,27 @@ func (c *TransactionController) GetListByAddress() {
 			},
 		},
 	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-	log.Print(query)
 
-	// Perform the search request.
-	res, err := db.ES.Search(
-		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex(esTransactions),
-		db.ES.Search.WithBody(&buf),
-		db.ES.Search.WithTrackTotalHits(true),
-		db.ES.Search.WithPretty(),
-	)
-	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
-	}
-	defer res.Body.Close()
+	result, err := db.Query(&query, esPrefix, TableTransaction)
 
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-	}
-
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-
-	c.Response(r, err)
+	c.Response(result, err)
 
 }
 
 // @Title Get Transactions by Block
 // @Description find transactions by block hash
+// @Param	network		path 	string	true		"the network you want to use"
 // @Param	blockHash		path 	string	true		"the blockHash you want to get"
 // @Success 200 {object} models.Transaction
 // @Failure 403 :blockHash is empty
-// @router /byBlock/:blockHash [get]
+// @router /:network/byBlock/:blockHash [get]
 func (c *TransactionController) GetListByBlock() {
 	blockHash := template.HTMLEscapeString(c.GetString(":blockHash"))
 	if blockHash == "" {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_ADDRESS_HASH"])
 		return
 	}
-	var r map[string]interface{}
 
-	// Build the request body.
-	var buf bytes.Buffer
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_phrase": map[string]interface{}{
@@ -257,42 +145,9 @@ func (c *TransactionController) GetListByBlock() {
 			},
 		},
 	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-	log.Print(query)
 
-	// Perform the search request.
-	res, err := db.ES.Search(
-		db.ES.Search.WithContext(context.Background()),
-		db.ES.Search.WithIndex(esTransactions),
-		db.ES.Search.WithBody(&buf),
-		db.ES.Search.WithTrackTotalHits(true),
-		db.ES.Search.WithPretty(),
-	)
-	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
-	}
-	defer res.Body.Close()
+	result, err := db.Query(&query, esPrefix, TableTransaction)
 
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-	}
-
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-
-	c.Response(r, err)
+	c.Response(result, err)
 
 }
