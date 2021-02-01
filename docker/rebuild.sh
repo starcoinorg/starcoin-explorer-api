@@ -1,6 +1,6 @@
 #!/bin/bash
 
 ./stop.sh
-./build_image.sh
+./build.sh
 ./run.sh
 docker logs -f starcoin-explorer-api

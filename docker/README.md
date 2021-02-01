@@ -6,7 +6,7 @@
 
 2. build docker image
 
-`./build_image.sh`
+`./build.sh`
 
 3. start container
 
@@ -22,7 +22,3 @@
 
 6. inspect a running container.
 `docker exec -it <CONTAINER_ID> /bin/bash`
-
-## Publish docker image to the hub
-
-`docker push starcoin-explorer-api:latest`
