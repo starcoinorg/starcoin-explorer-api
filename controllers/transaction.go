@@ -127,7 +127,7 @@ func (c *TransactionController) GetListByAddress() {
 func (c *TransactionController) GetListByBlock() {
 	blockHash := template.HTMLEscapeString(c.GetString(":blockHash"))
 	if blockHash == "" {
-		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_ADDRESS_HASH"])
+		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_BLOCK_HASH"])
 		return
 	}
 
@@ -135,6 +135,42 @@ func (c *TransactionController) GetListByBlock() {
 		"query": map[string]interface{}{
 			"match_phrase": map[string]interface{}{
 				"block_hash": blockHash,
+			},
+		},
+		"sort": []map[string]interface{}{
+			map[string]interface{}{
+				"transaction_index": map[string]interface{}{
+					"order": "desc",
+				},
+			},
+		},
+	}
+
+	result, err := db.Query(&query, esPrefix, TableTransaction)
+
+	c.Response(result, err)
+
+}
+
+
+// @Title Get Transactions by Block Height
+// @Description find transactions by block height
+// @Param	network		path 	string	true		"the network you want to use"
+// @Param	blockHeight		path 	string	true		"the blockHeight you want to get"
+// @Success 200 {object} models.Transaction
+// @Failure 403 :blockHeight is empty
+// @router /:network/byBlockHeight/:blockHeight [get]
+func (c *TransactionController) GetListByBlockHeight() {
+	blockHeight := template.HTMLEscapeString(c.GetString(":blockHeight"))
+	if blockHeight == "" {
+		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_BLOCK_HEIGHT"])
+		return
+	}
+
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"match_phrase": map[string]interface{}{
+				"block_number": blockHeight,
 			},
 		},
 		"sort": []map[string]interface{}{

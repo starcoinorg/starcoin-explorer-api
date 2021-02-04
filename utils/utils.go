@@ -13,6 +13,7 @@ type ErrorMessage struct {
 
 var ERROR_MESSAGE = map[string]*ErrorMessage{
 	"NO_BLOCK_HASH":       {400, "No block hash"},
+	"NO_BLOCK_HEIGHT":       {400, "No block height"},
 	"INVALID_PAGE":        {400, "Invalid page info"},
 	"NO_TRANSACTION_HASH": {400, "No transaction hash"},
 	"NO_ADDRESS_HASH": {400, "No address hash"},

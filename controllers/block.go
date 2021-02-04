@@ -41,6 +41,35 @@ func (c *BlockController) Get() {
 
 }
 
+
+// @Title Get By Height
+// @Description find block by block height
+// @Param	network		path 	string	true		"the network you want to use"
+// @Param	blockHeight		path 	string	true		"the blockHeight you want to get"
+// @Success 200 {object} models.Block
+// @Failure 403 :blockHeight is empty
+// @router /:network/height/:blockHeight [get]
+func (c *BlockController) GetByHeight() {
+	blockHeight := template.HTMLEscapeString(c.GetString(":blockHeight"))
+	if blockHeight == "" {
+		c.Response(nil, nil, utils.ERROR_MESSAGE["NO_BLOCK_HEIGHT"])
+		return
+	}
+
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"match_phrase": map[string]interface{}{
+				"header.number": blockHeight,
+			},
+		},
+	}
+
+	result, err := db.Query(&query, esPrefix, TableBlock)
+
+	c.Response(result, err)
+
+}
+
 // @Title GetAll
 // @Description get all blocks
 // @Param	network		path 	string	true		"the network you want to use"

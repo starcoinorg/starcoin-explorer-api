@@ -47,12 +47,14 @@ func Query(query *map[string]interface{}, esPrefix, table string) (interface{}, 
 		ES.Search.WithTrackTotalHits(true),
 		ES.Search.WithPretty(),
 	)
-	defer res.Body.Close()
+
 
 	if err != nil {
 		log.Printf("Error getting response: %s\n", err)
 		return res, err
 	}
+
+	defer res.Body.Close()
 
 	if res.IsError() {
 		var e map[string]interface{}
