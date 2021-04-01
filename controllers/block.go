@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"starcoin-explorer-api/db"
 	"starcoin-explorer-api/utils"
+	"strconv"
 )
 
 const TableBlock= "blocks"
@@ -82,9 +83,32 @@ func (c *BlockController) GetAll() {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["INVALID_PAGE"])
 		return
 	}
+	total, _ := strconv.Atoi(c.Ctx.Input.Query("total"))
 	pageSize := 20
 	from := (page - 1) * pageSize
 
+	// elastic has limit of 10000, we need to get total first then use search_after
+	if page > 500 && total == 0 {
+		query := map[string]interface{}{
+			"query": map[string]interface{}{
+				"match_all": map[string]interface{}{},
+			},
+			"from": 0,
+			"size": 1,
+			"sort": []map[string]interface{}{
+				map[string]interface{}{
+					"header.number": map[string]interface{}{
+						"order": "desc",
+					},
+				},
+			},
+		}
+		result, _ := db.Query(&query, esPrefix, TableBlock)
+		var hits = result.(map[string]interface{})["hits"]
+		var totalMap = hits.(map[string]interface{})["total"]
+		var totalValue = totalMap.(map[string]interface{})["value"]
+		total =  int(totalValue.(float64))
+	}
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_all": map[string]interface{}{},
@@ -98,6 +122,11 @@ func (c *BlockController) GetAll() {
 				},
 			},
 		},
+	}
+	if page > 500 && total > 0 {
+		query["from"] = 0
+		after := total - from
+		query["search_after"] = []interface{}{ after }
 	}
 	result, err := db.Query(&query, esPrefix, TableBlock)
 
