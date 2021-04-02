@@ -73,6 +73,5 @@ docker tag starcoin-explorer-api:latest starcoin/starcoin-explorer-api:<VERSION>
 docker push starcoin/starcoin-explorer-api:<VERSION>
 cd starcoin/kube/manifest/explorer/
 vi explorer-api-deployment.yaml # change image <VERSION> 
-kubectl --kubeconfig ~/.kube/starcoin_config --context aliyun --namespace starcoin-explorer-api delete deployment explorer-api-deployment
 kubectl --kubeconfig ~/.kube/starcoin_config --context aliyun --namespace starcoin-explorer-api apply -f explorer-api-deployment.yaml
 ```
