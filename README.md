@@ -61,3 +61,18 @@ cd tests
 go test -cpu 1 -run  Benchmark_ -bench=.
 ```
  
+### CI/CD
+
+```
+# change tag version in conf/app.conf
+cd docker
+./rebuild.sh  # test it in localhost
+docker images
+docker login
+docker tag starcoin-explorer-api:latest starcoin/starcoin-explorer-api:<VERSION>
+docker push starcoin/starcoin-explorer-api:<VERSION>
+cd starcoin/kube/manifest/explorer/
+vi explorer-api-deployment.yaml # change image <VERSION> 
+kubectl --kubeconfig ~/.kube/starcoin_config --context aliyun --namespace starcoin-explorer-api apply -f explorer-api-deployment.yaml
+kubectl --kubeconfig ~/.kube/starcoin_config --context aliyun --namespace starcoin-explorer-api deleee deployment explorer-api-deployment
+```
