@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"starcoin-explorer-api/db"
 	"starcoin-explorer-api/utils"
+	"strconv"
 )
 
 const TableTransaction = "txn_infos"
@@ -53,9 +54,9 @@ func (c *TransactionController) GetAll() {
 		c.Response(nil, nil, utils.ERROR_MESSAGE["INVALID_PAGE"])
 		return
 	}
+	after, _ := strconv.Atoi(c.Ctx.Input.Query("after"))
 	pageSize := 20
 	from := (page - 1) * pageSize
-
 
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
@@ -76,7 +77,12 @@ func (c *TransactionController) GetAll() {
 			},
 		},
 	}
-
+	// use search_after to fix default 10000 limit of elastic
+	// but we can not jump to specific page because transactions use timestamp(no such uid filed) as sort field
+	if page > 1 && after > 0 {
+		query["from"] = 0
+		query["search_after"] = []interface{}{ after }
+	}
 	result, err := db.Query(&query, esPrefix, TableTransaction)
 
 	c.Response(result, err)
